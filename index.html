@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+  <script src="co.js"></script>
+  <script src="promise-0.1.1.min.js"></script>
+  
+  <script>
+    
+    var generator = function* (a) {
+      for (var i = 0; i < a; i++) {
+        yield i;
+      }
+    };
+    
+    window.setImmediate = setTimeout;
+    
+    var deferred = function() {
+      var done, fail;
+      var promise = new Promise(function(resolve, reject) {
+        done = ok;
+        fail = reject;
+      });
+      return {
+        done: done,
+        fail: fail,
+        promise: function() { return promise }
+      }
+    }
+    
+    var get = function(time) {
+      var p = deferred();
+      setTimeout(function() { p.done("from ajax") }, time * 1000);
+      return p.promise();
+    };
+    
+    co(function*() {
+      var x = yield get(5);
+      console.log(x);
+      yield get(1);
+      console.log("hello");
+    })();
+    
+  </script>
+</html>
